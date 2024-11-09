@@ -1,3 +1,5 @@
+assignment1/cs231n/datasets/cifar-10-batches-py/*
+*.npz
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
