@@ -131,14 +131,10 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         # (a-b)**2 = a**2 + b**2 - 2*a*b
-        # print(np.sum(2*X[:,None,:]@self.X_train[:,:,None]))
-        print(X[:,None,:].shape)
-        print((self.X_train[:,:,None]).shape)
+        dists = np.sum(X[:,None,:]**2,axis=-1) + np.sum(self.X_train[None,:,:]**2,axis=-1) - 2*X@(self.X_train.T)
 
-        dists = np.sum(X[:,None,:]**2,axis=-1) + np.sum(self.X_train[None,:,:]**2,axis=-1) - np.sum(2*X[:,None,:]@self.X_train[:,:,None])
-
-        # dists = np.sum((X[:,None,:] - self.X_train[None,:,:])**2,axis=-1)
-
+        # dists = np.sum((X[:,None,:] - self.X_train[None,:,:])**2,axis=-1) # memory error
+        
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
