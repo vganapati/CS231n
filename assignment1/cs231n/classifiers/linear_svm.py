@@ -84,6 +84,8 @@ def svm_loss_vectorized(W, X, y, reg):
     mat = (-np.sum(X*W[:,y].T, axis=-1, keepdims=True)+(X @ W)+1)*mask
     max_mat = np.maximum(0, mat)
     loss += np.sum(max_mat)/X.shape[0]
+    # loss += np.sum(np.maximum(0,(((X@W) - ((X@W)[np.arange(X.shape[0]),y])[:,None])+1)*mask))/X.shape[0] # alternate
+
     loss += reg*np.sum(W*W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -98,13 +100,21 @@ def svm_loss_vectorized(W, X, y, reg):
     # loss.                                                                     #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-    breakpoint()
-    mask[:,None,:] * X[:,:,None]
-    (1 -mask[:,None,:]) * X[:,:,None]
-    dW[]
-    X[np.arange(X.shape[0]),y]
-    dW = (X @ W)
-    -np.sum(X, axis=0)*np.sum(mask,axis=-1)
+    mat_0 = np.maximum(0,(((X@W) - ((X@W)[np.arange(X.shape[0]),y])[:,None])+1)*mask) # expanded version of loss
+    mat_1 = np.repeat(X[:,None,:],W.shape[1],axis=1) # this will form the gradient, repeat the X values for num_classes times
+
+    # which X's don't matter
+    mask_1 = np.zeros_like(mat_0)
+    mask_1[mat_0>0] = 1 
+    
+    mat_2 = mask_1[:,:,None]*mat_1 # zero out anything that does not matter
+
+    # how many times to repeat the correct class
+    multiplier = np.sum(mask_1, axis=1)
+    mat_2[np.arange(X.shape[0]),y,:] = -mat_1[np.arange(X.shape[0]),y,:]*multiplier[:,None]
+    dW += np.sum(mat_2, axis=0).T
+    dW /= X.shape[0]
+    dW += 2*reg*W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
