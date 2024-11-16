@@ -33,9 +33,21 @@ def softmax_loss_naive(W, X, y, reg):
     # regularization!                                                           #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    max_mat = np.max(X@W, axis=1, keepdims=True)
+    loss_mat_0_top = np.exp((X@W)[np.arange(X.shape[0]),y][:,None] - max_mat)
+    loss_mat_0_bot = np.sum(np.exp(X@W - max_mat),axis=1, keepdims=True)
+    loss_mat_0 = loss_mat_0_top / loss_mat_0_bot
+    loss_mat_1 = -np.log(loss_mat_0) / X.shape[0]
+    loss += np.sum(loss_mat_1) 
+    loss += reg*np.sum(W**2)
 
-    pass
+    loss_mat_0_top_full = np.exp((X@W) - max_mat)
+    mat_0 = - loss_mat_0_top_full / loss_mat_0_bot
+    mat_0[np.arange(X.shape[0]),y] += 1
+    full_deriv = (-1/X.shape[0])*X[:,:,None] @ mat_0[:,None,:]
 
+    dW += np.sum(full_deriv,axis=0)
+    dW += 2*reg*W
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     return loss, dW
@@ -59,7 +71,21 @@ def softmax_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    max_mat = np.max(X@W, axis=1, keepdims=True)
+    loss_mat_0_top = np.exp((X@W)[np.arange(X.shape[0]),y][:,None] - max_mat)
+    loss_mat_0_bot = np.sum(np.exp(X@W - max_mat),axis=1, keepdims=True)
+    loss_mat_0 = loss_mat_0_top / loss_mat_0_bot
+    loss_mat_1 = -np.log(loss_mat_0) / X.shape[0]
+    loss += np.sum(loss_mat_1) 
+    loss += reg*np.sum(W**2)
+
+    loss_mat_0_top_full = np.exp((X@W) - max_mat)
+    mat_0 = - loss_mat_0_top_full / loss_mat_0_bot
+    mat_0[np.arange(X.shape[0]),y] += 1
+    full_deriv = (-1/X.shape[0])*X[:,:,None] @ mat_0[:,None,:]
+
+    dW += np.sum(full_deriv,axis=0)
+    dW += 2*reg*W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
